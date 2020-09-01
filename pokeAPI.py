@@ -2,17 +2,6 @@
 import json
 import requests
 
-# Get the pokemon's names, weight, and height and return them within the python console
-def main():
-    # Get the pokemon's name
-    pokemonName = getPokemonName()
-
-    # Request the pokemon from the API
-    requestDictionary = requestPokeAPI(pokemonName)
-
-    # Print the data for the pokemon
-    printPokeInfo(requestDictionary)
-
 
 # Ask the user for what pokemon's name they want to retrieve
 # given: None
@@ -22,7 +11,6 @@ def getPokemonName():
     pokeName = input()
     return pokeName
 
-# TODO: Create a get request to get the pokemon's name, weight and height from the json
 # Gets the requested pokemon from the API
 # Given, a pokemon name
 # prints the data(name + weight + height) to the console for said pokemon to the console
@@ -32,10 +20,14 @@ def requestPokeAPI(pokeName):
     requestURL = "https://pokeapi.co/api/v2/pokemon/" + pokeName
     # Make sure the request is lowercase
     requestURL = requestURL.casefold()
-    print(requestURL) # TESTING
+    # print(requestURL) # TESTING
 
     # Fetch the data from the URL
     r = requests.get(requestURL)
+
+    # Check if a valid request
+    if(r.ok != True):
+        return "error"
 
     # Get data as a json
     jsonInfo = r.json
@@ -45,10 +37,10 @@ def requestPokeAPI(pokeName):
     print(f'Request for {pokeName} complete!\n')
     return pokeDictionary
 
-
-
-
-# TODO: print and format the data in the json
+# Print the information (height, weight, name) 
+# For the given pokemon
+# Given: dictionary(of json data)
+# Return: printed name, height, and weight of pokemon
 def printPokeInfo(pokeDictionary):
     # Easy variables for printing
     name = pokeDictionary['name'].title()
@@ -66,9 +58,48 @@ def printPokeInfo(pokeDictionary):
 
     # Print the information for the specified
     print(f'Name: {name}\nWeight: {weight}kg\nHeight: {heightFt}ft, {heightIn}in')
+    return
 
+# Get the pokemon's names, weight, and height and return them within the python console
+def main():
+    newRequest = True
+    while(newRequest == True):
+        # Get the pokemon's name
+        pokemonName = getPokemonName()
 
+        # Request the pokemon from the API
+        requestDictionary = requestPokeAPI(pokemonName)
 
+        # Check if it's a valid request
+        if(requestDictionary == "error"):
+            print("That pokemon was not found\n")
+
+        # It's a valid request
+        else:
+            # Print the data for the pokemon
+            printPokeInfo(requestDictionary)
+
+        # Ask user if they want to continue requesting pokemon
+        validRequest = False
+        while(validRequest == False):
+            print("\nRequest another pokemon?")
+            print("1: Yes")
+            print("2: No")
+            menuChoice = input()
+            # User wants to request another pokemon
+            if menuChoice == '1':
+                validRequest = True
+
+            # User wants to quit requesting pokemon
+            elif menuChoice == '2':
+                validRequest = True
+                newRequest = False
+            
+            # User input invalid menu choice
+            else:
+                print("Invalid menu choice, try again")
+
+    print("\n***Thanks for catching them all gamer!***")
 # Main function called
 if __name__ == "__main__":
     main()
